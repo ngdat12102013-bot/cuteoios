@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CUTEO X AURA - Ultimate Gaming Suite</title>
+  <style>
+    :root {
+      --bg-dark: #030812;
+      --card-bg: rgba(10, 22, 40, 0.65);
+      --card-border: rgba(0, 210, 255, 0.3);
+      --neon-blue: #00d2ff;
+      --neon-cyan: #80e5ff;
+      --text-main: #f0f8ff;
+      --text-sub: #7a9bb8;
+      --gold: #ffc700;
+      --fire-orange: #ff5500;
+      --ff-max-purple: #9d4edd;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 210, 255, 0.25) 0%, transparent 60%),
+        radial-gradient(circle at 80% 85%, rgba(128, 229, 255, 0.15) 0%, transparent 50%);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    #particle-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 430px;
+      height: 100vh;
+      background: rgba(6, 14, 26, 0.88);
+      backdrop-filter: blur(25px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-left: 1px solid rgba(0, 210, 255, 0.2);
+      border-right: 1px solid rgba(0, 210, 255, 0.2);
+      z-index: 2;
+    }
+
+    .dashboard-header {
+      padding: 14px 16px;
+      background: linear-gradient(180deg, rgba(12, 30, 55, 0.9) 0%, rgba(8, 15, 28, 0) 100%);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid var(--neon-blue);
+      object-fit: cover;
+      box-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+    }
+
+    .header-tag {
+      font-size: 0.55rem;
+      letter-spacing: 2px;
+      color: var(--neon-cyan);
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .header-title {
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 0 0 10px rgba(0, 210, 255, 0.8);
+      font-weight: 800;
+    }
+
+    .status-pill {
+      background: rgba(0, 210, 255, 0.15);
+      border: 1px solid var(--neon-blue);
+      color: var(--neon-cyan);
+      font-size: 0.65rem;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      background-color: var(--neon-blue);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--neon-blue);
+      animation: pulse 1.5s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.3; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px;
+      padding-bottom: 10px;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      letter-spacing: 2px;
+      color: var(--text-sub);
+      margin: 12px 0 8px 4px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+    }
+
+    .profile-card {
+      background: linear-gradient(135deg, rgba(15, 35, 65, 0.85) 0%, rgba(8, 20, 38, 0.95) 100%);
+      border: 1px solid var(--neon-blue);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+    }
+
+    .profile-info { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+
+    .avatar-box {
+      width: 66px; height: 66px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
+      padding: 2px;
+      box-shadow: 0 0 15px rgba(0, 210, 255, 0.6);
+      flex-shrink: 0;
+    }
+
+    .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .profile-name { font-size: 1.2rem; font-weight: 800; }
+    .profile-role { font-size: 0.75rem; color: var(--neon-cyan); font-weight: 600; }
+
+    .social-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .social-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(0, 210, 255, 0.25);
+      color: var(--text-main);
+      padding: 8px; border-radius: 10px;
+      font-size: 0.78rem; font-weight: 700; cursor: pointer;
+    }
+
+    .info-list { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; overflow: hidden; margin-bottom: 12px; }
+    .info-item { display: flex; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 0.82rem; }
+    .val-highlight { color: var(--neon-blue); font-weight: 700; }
+    .val-gold { color: var(--gold); font-weight: 700; }
+
+    /* THANH TAB TÍCH HỢP NẰM NGHỊCH TRỰC TIẾP NGAY DƯỚI CẤU HÌNH */
+    .inline-nav {
+      background: rgba(4, 12, 24, 0.95);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 15px rgba(0, 210, 255, 0.25);
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .nav-item {
+      background: none; border: none; color: var(--text-sub);
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-size: 0.62rem; cursor: pointer; 
+      padding: 6px 4px;
+      border-radius: 12px;
+      font-weight: 700;
+      flex: 1;
+      transition: all 0.2s;
+    }
+
+    .nav-item .icon { 
+      font-size: 1rem; 
+      padding: 3px 8px; 
+      border-radius: 10px; 
+      transition: all 0.25s; 
+    }
+
+    .nav-item.active { color: #fff; }
+    .nav-item.active .icon { 
+      background: var(--neon-blue); 
+      color: #000; 
+      box-shadow: 0 0 12px rgba(0, 210, 255, 0.8); 
+    }
+
+    /* TOGGLES */
+    .toggle-list { display: flex; flex-direction: column; gap: 10px; }
+    .toggle-item {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 14px; padding: 12px 14px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .toggle-info p { font-size: 0.7rem; color: var(--text-sub); margin-top: 3px; }
+    .item-header { display: flex; align-items: center; gap: 8px; }
+
+    .badge {
+      background: rgba(0, 210, 255, 0.15); color: var(--neon-cyan);
+      font-size: 0.6rem; padding: 2px 6px; border-radius: 6px; font-weight: 800;
+      border: 1px solid rgba(0, 210, 255, 0.3);
+    }
+
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255, 255, 255, 0.08); transition: .3s;
+      border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+      background-color: #4a657a; transition: .3s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--neon-blue); box-shadow: 0 0 12px rgba(0, 210, 255, 0.7); }
+    input:checked + .slider:before { transform: translateX(20px); background-color: #fff; }
+
+    /* BOOST PAGE */
+    .boost-split-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .ff-card {
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+    }
+
+    .ff-normal-card {
+      background: linear-gradient(145deg, rgba(255, 85, 0, 0.15) 0%, rgba(10, 22, 40, 0.85) 100%);
+      border: 1px solid var(--fire-orange);
+      box-shadow: 0 0 15px rgba(255, 85, 0, 0.2);
+    }
+
+    .ff-max-card {
+      background: linear-gradient(145deg, rgba(157, 78, 221, 0.15) 0%, rgba(10, 22, 40, 0.85) 100%);
+      border: 1px solid var(--ff-max-purple);
+      box-shadow: 0 0 15px rgba(157, 78, 221, 0.2);
+    }
+
+    .ff-card-header { font-size: 0.85rem; font-weight: 800; margin-bottom: 6px; }
+    .ff-normal-card .ff-card-header { color: #ff8844; }
+    .ff-max-card .ff-card-header { color: #c77dff; }
+
+    .ff-desc { font-size: 0.65rem; color: var(--text-sub); margin-bottom: 10px; }
+
+    .btn-launch {
+      width: 100%; padding: 10px 4px; border-radius: 10px;
+      font-size: 0.7rem; font-weight: 800; border: none; cursor: pointer; text-transform: uppercase;
+    }
+    .btn-launch-normal { background: linear-gradient(90deg, #ff5500, #ff8800); color: #fff; }
+    .btn-launch-max { background: linear-gradient(90deg, #7b2cbf, #9d4edd); color: #fff; }
+    .btn-launch:active { transform: scale(0.95); }
+
+    .slider-group { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+    .slider-item { display: flex; flex-direction: column; gap: 4px; }
+    .slider-label { display: flex; justify-content: space-between; font-size: 0.75rem; }
+    .range-slider { width: 100%; height: 5px; border-radius: 5px; background: rgba(255, 255, 255, 0.08); accent-color: var(--neon-blue); }
+
+    .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .metric-box {
+      background: rgba(0, 0, 0, 0.35); padding: 10px; border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; font-size: 0.78rem;
+    }
+
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .ctrl-btn {
+      background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border);
+      color: #fff; padding: 9px; border-radius: 10px; font-size: 0.72rem; font-weight: 700; cursor: pointer;
+    }
+
+    .console-box {
+      background: #020710; border: 1px solid var(--card-border);
+      padding: 8px; border-radius: 10px; font-family: monospace;
+      font-size: 0.68rem; color: var(--neon-cyan); height: 80px; overflow-y: auto; margin: 8px 0;
+    }
+    .console-input-group { display: flex; gap: 6px; }
+    .console-input-group input {
+      flex: 1; background: #020710; border: 1px solid var(--card-border);
+      color: #fff; padding: 6px 10px; border-radius: 8px; outline: none; font-size: 0.75rem;
+    }
+    .run-btn {
+      background: var(--neon-blue); color: #000; border: none;
+      padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;
+    }
+
+    .select-box { background: #040e1a; border: 1px solid var(--card-border); color: #fff; padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; }
+    .setting-item {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; border-radius: 12px; margin-bottom: 8px;
+    }
+    .btn-block { width: 100%; padding: 10px; border-radius: 10px; font-weight: 800; border: none; margin-top: 6px; font-size: 0.78rem; cursor: pointer; }
+    .btn-warn { background: rgba(255, 199, 0, 0.12); color: var(--gold); border: 1px solid rgba(255, 199, 0, 0.3); }
+    .btn-danger { background: rgba(255, 60, 60, 0.12); color: #ff4d4d; border: 1px solid rgba(255, 60, 60, 0.3); }
+  </style>
+</head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+
+  <div class="app-container">
+    <!-- HEADER APP -->
+    <header class="dashboard-header">
+      <div class="header-brand">
+        <img src="IMG_3115.jpeg" alt="CUTEO X AURA" class="header-avatar" />
+        <div>
+          <span class="header-tag">MOBILE ENGINE</span>
+          <h1 class="header-title">CUTEO X AURA</h1>
+        </div>
+      </div>
+      <span class="status-pill"><div class="status-dot"></div> ACTIVE</span>
+    </header>
+
+    <main class="content-area">
+      <!-- THÔNG TIN PROFILE ADMIN -->
+      <div class="profile-card">
+        <div class="profile-info">
+          <div class="avatar-box">
+            <img src="IMG_3115.jpeg" alt="CUTEO X AURA Avatar" class="avatar-img" />
+          </div>
+          <div>
+            <h2 class="profile-name">CUTEO X AURA</h2>
+            <p class="profile-role">System Admin / Dev</p>
+          </div>
+        </div>
+        <div class="social-grid">
+          <button class="social-btn">Facebook</button>
+          <button class="social-btn">Zalo</button>
+          <button class="social-btn">TikTok 1</button>
+          <button class="social-btn">TikTok 2</button>
+        </div>
+      </div>
+
+      <!-- CẤU HÌNH HỆ THỐNG -->
+      <div class="section-label">CẤU HÌNH HỆ THỐNG</div>
+      <div class="info-list">
+        <div class="info-item"><span>Phiên bản</span><span class="val-highlight">CUTEO X AURA V3</span></div>
+        <div class="info-item"><span>Phong cách</span><span class="val">Ice Cyber Glass</span></div>
+        <div class="info-item"><span>Trạng thái Engine</span><span class="val-highlight">Đã kích hoạt sẵn</span></div>
+        <div class="info-item"><span>Trò chơi hỗ trợ</span><span class="val-gold">Free Fire / FF MAX</span></div>
+      </div>
+
+      <!-- THANH 5 TAB ĐÃ ĐƯỢC CHUYỂN LÊN ĐÂY (NGAY DƯỚI CẤU HÌNH HỆ THỐNG) -->
+      <nav class="inline-nav">
+        <button class="nav-item active" data-tab="tab-home">
+          <span class="icon">🏠</span>
+          <span class="label">Home</span>
+        </button>
+        <button class="nav-item" data-tab="tab-func">
+          <span class="icon">⚙️</span>
+          <span class="label">Func</span>
+        </button>
+        <button class="nav-item" data-tab="tab-boost">
+          <span class="icon">⚡</span>
+          <span class="label">Boost</span>
+        </button>
+        <button class="nav-item" data-tab="tab-live">
+          <span class="icon">📈</span>
+          <span class="label">Live</span>
+        </button>
+        <button class="nav-item" data-tab="tab-settings">
+          <span class="icon">🔧</span>
+          <span class="label">Cài đặt</span>
+        </button>
+      </nav>
+
+      <!-- NỘI DUNG CÁC TAB -->
+      <section id="tab-home" class="tab-content active">
+        <!-- TAB HOME ĐÃ CHỨA THÔNG TIN TRÊN -->
+      </section>
+
+      <!-- TAB 2: FUNC -->
+      <section id="tab-func" class="tab-content">
+        <div class="section-label">CẤU HÌNH TÂM & MÀN HÌNH</div>
+        <div class="toggle-list">
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <div class="item-header"><span class="badge">01</span> <h3>AUTO AIM ASSIST</h3></div>
+              <p>Hỗ trợ căn chuẩn tâm ngắm vào vùng mục tiêu</p>
+            </div>
+            <label class="switch"><input type="checkbox" /><span class="slider"></span></label>
+          </div>
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <div class="item-header"><span class="badge">02</span> <h3>CROSSHAIR SMOOTH</h3></div>
+              <p>Mượt tâm - Lướt kéo nhẹ nhàng, chống khựng</p>
+            </div>
+            <label class="switch"><input type="checkbox" /><span class="slider"></span></label>
+          </div>
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <div class="item-header"><span class="badge">03</span> <h3>TARGET LOCK</h3></div>
+              <p>Khóa vùng ngắm cố định khi thao tác vuốt</p>
+            </div>
+            <label class="switch"><input type="checkbox" /><span class="slider"></span></label>
+          </div>
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <div class="item-header"><span class="badge">04</span> <h3>TOUCH RESPONSE 120Hz</h3></div>
+              <p>Tăng tốc phản hồi điểm cảm ứng trên màn hình</p>
+            </div>
+            <label class="switch"><input type="checkbox" /><span class="slider"></span></label>
+          </div>
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <div class="item-header"><span class="badge">05</span> <h3>DISP COLOR ENHANCE</h3></div>
+              <p>Làm rõ màu sắc, tăng độ chi tiết hình ảnh</p>
+            </div>
+            <label class="switch"><input type="checkbox" /><span class="slider"></span></label>
+          </div>
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <div class="item-header"><span class="badge">06</span> <h3>RECOIL STABILIZER</h3></div>
+              <p>Hỗ trợ ổn định đường đạn khi xả liên tục</p>
+            </div>
+            <label class="switch"><input type="checkbox" /><span class="slider"></span></label>
+          </div>
+          <div class="toggle-item">
+            <div class="toggle-info">
+              <div class="item-header"><span class="badge">07</span> <h3>CAMERA SHAKE FIX</h3></div>
+              <p>Giảm hiện tượng rung khung hình khi di chuyển nhanh</p>
+            </div>
+            <label class="switch"><input type="checkbox" /><span class="slider"></span></label>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: BOOST -->
+      <section id="tab-boost" class="tab-content">
+        <div class="section-label">CHỌN PHIÊN BẢN FREE FIRE</div>
+        
+        <div class="boost-split-container">
+          <div class="ff-card ff-normal-card">
+            <div>
+              <div class="ff-card-header">🔥 FREE FIRE</div>
+              <div class="ff-desc">Bản Thường - Tối ưu RAM & Cảm ứng siêu mượt.</div>
+            </div>
+            <button class="btn-launch btn-launch-normal" onclick="launchGame('normal')">
+              🚀 BOOST & MỞ GAME
+            </button>
+          </div>
+
+          <div class="ff-card ff-max-card">
+            <div>
+              <div class="ff-card-header">⚡ FF MAX</div>
+              <div class="ff-desc">Bản MAX - Ép xung Đồ họa & Ép FPS 120Hz.</div>
+            </div>
+            <button class="btn-launch btn-launch-max" onclick="launchGame('max')">
+              🚀 BOOST & MỞ GAME
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size:0.85rem; margin-bottom: 8px;">ĐIỀU CHỈNH CHỈ SỐ ENGINE</h3>
+          <div class="slider-group">
+            <div class="slider-item">
+              <div class="slider-label"><span><span class="badge">01</span> AIM ASSIST LEVEL</span><span id="v1" class="val-highlight">0%</span></div>
+              <input type="range" min="0" max="100" value="0" class="range-slider" data-target="v1" />
+            </div>
+            <div class="slider-item">
+              <div class="slider-label"><span><span class="badge">02</span> TOUCH SENSITIVITY</span><span id="v2" class="val-highlight">0%</span></div>
+              <input type="range" min="0" max="100" value="0" class="range-slider" data-target="v2" />
+            </div>
+            <div class="slider-item">
+              <div class="slider-label"><span><span class="badge">03</span> STABILITY RATE</span><span id="v3" class="val-highlight">0%</span></div>
+              <input type="range" min="0" max="100" value="0" class="range-slider" data-target="v3" />
+            </div>
+            <div class="slider-item">
+              <div class="slider-label"><span><span class="badge">04</span> FRAME ACCELERATION</span><span id="v4" class="val-highlight">0%</span></div>
+              <input type="range" min="0" max="100" value="0" class="range-slider" data-target="v4" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: LIVE -->
+      <section id="tab-live" class="tab-content">
+        <div class="card">
+          <h3 style="font-size:0.85rem;">THÔNG SỐ GIÁM SÁT REALTIME</h3>
+          <div class="metrics-grid">
+            <div class="metric-box"><span>FPS</span><strong class="val-highlight" id="fpsVal">60</strong></div>
+            <div class="metric-box"><span>Ping</span><strong style="color:var(--neon-cyan)" id="pingVal">14 ms</strong></div>
+            <div class="metric-box"><span>CPU</span><strong id="cpuVal">12%</strong></div>
+            <div class="metric-box"><span>RAM</span><strong id="ramVal">195 MB</strong></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size:0.85rem;">THAO TÁC NHANH</h3>
+          <div class="action-grid">
+            <button class="ctrl-btn" onclick="triggerBoost('Unlock 120 FPS')">Unlock 120 FPS</button>
+            <button class="ctrl-btn" onclick="clearConsoleLog()">Clear Log</button>
+            <button class="ctrl-btn" onclick="triggerBoost('Tối Ưu Bộ Nhớ')">Tối Ưu Bộ Nhớ</button>
+            <button class="ctrl-btn" onclick="triggerBoost('Làm Sạch Cache')">Làm Sạch Cache</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size:0.85rem;">CONSOLE SYSTEM</h3>
+          <div id="consoleLog" class="console-box">[CUTEO X AURA] System engine loaded successfully.</div>
+          <div class="console-input-group">
+            <input type="text" id="cmdInput" placeholder="Nhập lệnh..." />
+            <button id="runCmdBtn" class="run-btn">Run</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: SETTINGS -->
+      <section id="tab-settings" class="tab-content">
+        <div class="section-label">TÙY CHỈNH TỔNG THỂ</div>
+        <div class="setting-item">
+          <div>
+            <h3>Giao diện Theme</h3>
+            <p style="font-size: 0.7rem; color: var(--text-sub);">Màu sắc hiển thị</p>
+          </div>
+          <select class="select-box"><option>Ice Blue Glow</option></select>
+        </div>
+
+        <div class="section-label">TÍNH NĂNG PHỤ</div>
+        <div class="toggle-list">
+          <div class="toggle-item">
+            <div><h3>Âm thanh phản hồi</h3></div>
+            <label class="switch"><input type="checkbox" id="soundToggle" checked /><span class="slider"></span></label>
+          </div>
+          <div class="toggle-item">
+            <div><h3>Giọng nói AI (Voice)</h3></div>
+            <label class="switch"><input type="checkbox" id="voiceToggle" checked /><span class="slider"></span></label>
+          </div>
+        </div>
+
+        <div class="section-label">HỆ THỐNG</div>
+        <button class="btn-block btn-warn" onclick="playBeep(300, 0.2); speakVoice('Đã đặt lại cấu hình');">ĐẶT LẠI CẤU HÌNH</button>
+        <button class="btn-block btn-danger" onclick="playBeep(200, 0.3); speakVoice('Đang đăng xuất khỏi hệ thống');">ĐĂNG XUẤT</button>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playBeep(freq = 600, duration = 0.08) {
+      const soundOn = document.getElementById("soundToggle");
+      if (soundOn && !soundOn.checked) return;
+
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function speakVoice(text) {
+      const voiceOn = document.getElementById("voiceToggle");
+      if (voiceOn && !voiceOn.checked) return;
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'vi-VN';
+        utterance.rate = 1.1;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function launchGame(type) {
+      const isMax = type === 'max';
+      const gameName = isMax ? "Free Fire MAX" : "Free Fire";
+      const scheme = isMax ? "freefiremax://" : "freefire://";
+
+      playBeep(1200, 0.2);
+      speakVoice(`Đang tối ưu và mở ${gameName}`);
+
+      const consoleLog = document.getElementById("consoleLog");
+      if (consoleLog) {
+        const time = new Date().toLocaleTimeString();
+        consoleLog.innerHTML += `<br>[${time}] > [BOOST ENGINE]: Cleared RAM & Boosted ${gameName}...`;
+        consoleLog.scrollTop = consoleLog.scrollHeight;
+      }
+
+      setTimeout(() => {
+        window.location.href = scheme;
+      }, 1000);
+    }
+
+    const canvas = document.getElementById("particle-canvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 0.5;
+        this.speedY = Math.random() * 0.8 + 0.2;
+        this.opacity = Math.random() * 0.5 + 0.2;
+      }
+      update() {
+        this.y += this.speedY;
+        if (this.y > canvas.height) this.reset();
+      }
+      draw() {
+        ctx.fillStyle = `rgba(0, 210, 255, ${this.opacity})`;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = "#00d2ff";
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < 40; i++) particles.push(new Particle());
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const navItems = document.querySelectorAll(".nav-item");
+      const tabContents = document.querySelectorAll(".tab-content");
+
+      navItems.forEach((item) => {
+        item.addEventListener("click", () => {
+          playBeep(800, 0.05);
+          const targetTab = item.getAttribute("data-tab");
+
+          navItems.forEach((nav) => nav.classList.remove("active"));
+          tabContents.forEach((tab) => tab.classList.remove("active"));
+
+          item.classList.add("active");
+          document.getElementById(targetTab).classList.add("active");
+
+          const label = item.querySelector(".label").textContent;
+          speakVoice(label);
+        });
+      });
+
+      const switches = document.querySelectorAll(".switch input");
+      switches.forEach(sw => {
+        sw.addEventListener("change", (e) => {
+          if (e.target.checked) {
+            playBeep(1000, 0.08);
+            speakVoice("Đã bật");
+          } else {
+            playBeep(400, 0.08);
+            speakVoice("Đã tắt");
+          }
+        });
+      });
+
+      const rangeSliders = document.querySelectorAll(".range-slider");
+      rangeSliders.forEach((slider) => {
+        slider.addEventListener("input", (e) => {
+          const targetSpan = document.getElementById(e.target.getAttribute("data-target"));
+          if (targetSpan) targetSpan.textContent = `${e.target.value}%`;
+        });
+        slider.addEventListener("change", () => playBeep(700, 0.05));
+      });
+
+      const runCmdBtn = document.getElementById("runCmdBtn");
+      const cmdInput = document.getElementById("cmdInput");
+      const consoleLog = document.getElementById("consoleLog");
+
+      if (runCmdBtn && cmdInput) {
+        runCmdBtn.addEventListener("click", () => {
+          const cmd = cmdInput.value.trim();
+          if (cmd) {
+            playBeep(900, 0.06);
+            const time = new Date().toLocaleTimeString();
+            consoleLog.innerHTML += `<br>[${time}] > ${cmd}`;
+            cmdInput.value = "";
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+          }
+        });
+      }
+
+      setInterval(() => {
+        const ping = document.getElementById("pingVal");
+        const cpu = document.getElementById("cpuVal");
+        if (ping) ping.textContent = `${Math.floor(Math.random() * 6 + 12)} ms`;
+        if (cpu) cpu.textContent = `${Math.floor(Math.random() * 8 + 10)}%`;
+      }, 2500);
+    });
+
+    function triggerBoost(title) {
+      playBeep(1100, 0.15);
+      speakVoice(`Đã thực hiện ${title}`);
+      const consoleLog = document.getElementById("consoleLog");
+      if (consoleLog) {
+        const time = new Date().toLocaleTimeString();
+        consoleLog.innerHTML += `<br>[${time}] > Executed: ${title}`;
+        consoleLog.scrollTop = consoleLog.scrollHeight;
+      }
+    }
+
+    function clearConsoleLog() {
+      playBeep(500, 0.05);
+      const consoleLog = document.getElementById("consoleLog");
+      if (consoleLog) consoleLog.innerHTML = `[CUTEO X AURA] Console cleared.`;
+    }
+  </script>
+</body>
+</html>
