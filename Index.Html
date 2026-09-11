@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SERECTV3 - Dashboard</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SERECTV3">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
+            --subtext-color: #94a3b8;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Sans-Serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px 16px 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+        }
+        .app-header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .subtitle {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--subtext-color);
+            font-weight: 600;
+        }
+        .app-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffffff;
+            margin: 6px 0;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-color);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            color: var(--subtext-color);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        .link-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .link-card:active {
+            transform: scale(0.98);
+            background-color: #334155;
+        }
+        .card-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .card-info p {
+            font-size: 13px;
+            color: var(--subtext-color);
+            margin-top: 2px;
+        }
+        .arrow-icon {
+            color: var(--accent-color);
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .info-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 10px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .info-item:last-child {
+            margin-bottom: 0;
+        }
+        .info-label {
+            color: var(--subtext-color);
+        }
+        .info-value {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <div class="subtitle">Premium Mobile Dashboard</div>
+            <h1 class="app-title">SERECTV3</h1>
+            <div class="badge">Admin Premium Verified FF Panel</div>
+        </div>
+
+        <div class="section-title">Liên hệ Admin</div>
+
+        <a href="https://facebook.com" class="link-card">
+            <div class="card-info">
+                <h3>Facebook</h3>
+                <p>Hồ sơ chính thức • Verified CUTEO</p>
+            </div>
+            <div class="arrow-icon">➔</div>
+        </a>
+
+        <a href="https://zalo.me/0583516778" class="link-card">
+            <div class="card-info">
+                <h3>Zalo</h3>
+                <p>Hỗ trợ nhanh • 0583516778</p>
+            </div>
+            <div class="arrow-icon">➔</div>
+        </a>
+
+        <a href="https://tiktok.com/@cuteo_120" class="link-card">
+            <div class="card-info">
+                <h3>TikTok Main (T1)</h3>
+                <p>Kênh cập nhật nội dung chính @cuteo_120</p>
+            </div>
+            <div class="arrow-icon">➔</div>
+        </a>
+
+        <a href="https://tiktok.com/@cuteo_120" class="link-card">
+            <div class="card-info">
+                <h3>TikTok Sub (T2)</h3>
+                <p>Kênh nội dung bổ sung @cuteo_120</p>
+            </div>
+            <div class="arrow-icon">➔</div>
+        </a>
+
+        <div class="section-title">Thông tin ứng dụng</div>
+        <div class="info-box">
+            <div class="info-item">
+                <span class="info-label">Tên ứng dụng:</span>
+                <span class="info-value">SECRETV3</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Quyền hạn:</span>
+                <span class="info-value">Developer / Admin</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Trạng thái:</span>
+                <span class="info-value" style="color: #4ade80;">● Hoạt động</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
